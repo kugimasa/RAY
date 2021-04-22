@@ -26,6 +26,18 @@ vec3 color(const ray &r, hitable *world) {
   }
 }
 
+void flush_progress(float progress) {
+  int bar_width = 20;
+  cout << "\r [";
+  int pos = bar_width * progress;
+  for (int i = 0; i < bar_width; ++i) {
+    if (i < pos) cout <<  "=";
+    else if (i == pos) cout <<  ">";
+    else cout <<  " ";
+  }
+  cout << "] " << int(progress * 100.0) << " %" << flush;
+}
+
 int main() {
   int nx = 200;
   int ny = 100;
@@ -40,6 +52,9 @@ int main() {
   list[3] = new sphere(vec3(0, -100.5, -1), 100);
   hitable *world = new hitable_list(list, 4);
   camera cam;
+  float progress = 0.0;
+  int img_size = nx * ny;
+  cout << "========== Render ==========" << endl;
   for (int j = ny - 1; j >= 0; j--) {
     for (int i = 0; i < nx; i++) {
       vec3 col(0, 0, 0);
@@ -55,9 +70,10 @@ int main() {
       int ir = int(255.99 * col[0]);
       int ig = int(255.99 * col[1]);
       int ib = int(255.99 * col[2]);
-
+      progress = float (i + (ny - j - 1) * nx) / img_size;
+      flush_progress(progress);
       outputfile << ir << " " << ig << " " << ib << "\n";
     }
   }
+  cout << "\n========== Finish ==========" << endl;
 }
-
