@@ -4,13 +4,12 @@
 
 #include <iostream>
 #include <fstream>
-#include "float.h"
 #include "objects/sphere.h"
 #include "utils/hitable_list.h"
+#include "utils/output_file.h"
+#include "utils/my_print.h"
 #include "camera/camera.h"
 #include "material/material.h"
-
-using namespace std;
 
 vec3 color(const ray &r, hitable *world) {
   hit_record rec;
@@ -28,21 +27,19 @@ vec3 color(const ray &r, hitable *world) {
 
 void flush_progress(float progress) {
   int bar_width = 20;
-  cout << "\r [";
+  std::cout << "\r [";
   int pos = bar_width * progress;
   for (int i = 0; i < bar_width; ++i) {
-    if (i < pos) cout <<  "=";
-    else if (i == pos) cout <<  ">";
-    else cout <<  " ";
+    if (i < pos) std::cout <<  "=";
+    else if (i == pos) std::cout <<  ">";
+    else std::cout <<  " ";
   }
-  cout << "] " << int(progress * 100.0) << " %" << flush;
+  std::cout << "] " << int(progress * 100.0) << " %" << std::flush;
 }
 
-int main() {
-  int nx = 200;
-  int ny = 100;
-  int ns = 100;
-  ofstream outputfile("Diffuse_3sphere.ppm");
+void render(int nx, int ny, int ns)
+{
+  std::ofstream outputfile("Diffuse_3sphere.ppm");
   outputfile << "P3\n" << nx << " " << ny << " " << "255\n";
   ///list of sphere objects
   hitable *list[4];
@@ -54,7 +51,7 @@ int main() {
   camera cam;
   float progress = 0.0;
   int img_size = nx * ny;
-  cout << "========== Render ==========" << endl;
+  std::cout << "========== Render ==========" << std::endl;
   for (int j = ny - 1; j >= 0; j--) {
     for (int i = 0; i < nx; i++) {
       vec3 col(0, 0, 0);
@@ -75,5 +72,36 @@ int main() {
       outputfile << ir << " " << ig << " " << ib << "\n";
     }
   }
-  cout << "\n========== Finish ==========" << endl;
+  std::cout << "\n========== Finish ==========" << std::endl;
+}
+
+int main() {
+  int nx = 400;
+  int ny = 400;
+  int ns = 100;
+
+  /// BitMap
+  BITMAPDATA_t output;
+  output.width = nx;
+  output.height = ny;
+  output.ch = 3;
+  /// Malloc
+  output.data = (unsigned char*)malloc(sizeof(unsigned char) * output.width * output.height * output.ch);
+  if (output.data == NULL) {
+    error_print("Memory Allocation Error");
+    return -1;
+  }
+
+  /// Render
+  memset(output.data, 0xFF, output.width * output.height * output.ch);
+
+  // render(nx, ny, ns);
+
+
+  if (pngFileEncodeWrite(&output, "output.png")) {
+    freeBitmapData(&output);
+    return -1;
+  }
+  freeBitmapData(&output);
+  return 0;
 }
