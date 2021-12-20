@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-#include <fstream>
 #include "objects/sphere.h"
 #include "utils/hitable_list.h"
 #include "utils/output_file.h"
@@ -40,20 +39,18 @@ void flush_progress(float progress) {
 void drawPix(unsigned char *data,
              unsigned int w, unsigned int h,
              unsigned int x, unsigned int y,
-             unsigned char r, unsigned char g, unsigned char b)
+             unsigned int r, unsigned int g, unsigned int b)
 {
   unsigned char *p;
-  p = data + y * w * 3 + x * 3;
-  p[0] = r;
-  p[1] = g;
-  p[2] = b;
+  p = data + (h - y) * w * 3 + x * 3;
+  p[0] = (unsigned char)r;
+  p[1] = (unsigned char)g;
+  p[2] = (unsigned char)b;
 }
 
-void render(int nx, int ny, int ns)
+void render(unsigned char *data, unsigned int nx, unsigned int ny, int ns)
 {
-  std::ofstream outputfile("Diffuse_3sphere.ppm");
-  outputfile << "P3\n" << nx << " " << ny << " " << "255\n";
-  ///list of sphere objects
+  /// シーンデータ
   hitable *list[4];
   list[0] = new sphere(vec3(0, 0, -1), 0.5);
   list[1] = new sphere(vec3(-1, 0, -1), 0.5);
@@ -64,7 +61,7 @@ void render(int nx, int ny, int ns)
   float progress = 0.0;
   int img_size = nx * ny;
   std::cout << "========== Render ==========" << std::endl;
-  for (int j = ny - 1; j >= 0; j--) {
+  for (int j = 0; j < ny; j++) {
     for (int i = 0; i < nx; i++) {
       vec3 col(0, 0, 0);
       for (int s = 0; s < ns; s++) {
@@ -79,17 +76,17 @@ void render(int nx, int ny, int ns)
       int ir = int(255.99 * col[0]);
       int ig = int(255.99 * col[1]);
       int ib = int(255.99 * col[2]);
-      progress = float (i + (ny - j - 1) * nx) / img_size;
+      progress = float (i + j * nx) / img_size;
       flush_progress(progress);
-      outputfile << ir << " " << ig << " " << ib << "\n";
+      drawPix(data, nx, ny, i, j, ir, ig, ib);
     }
   }
   std::cout << "\n========== Finish ==========" << std::endl;
 }
 
 int main() {
-  int nx = 400;
-  int ny = 400;
+  int nx = 800;
+  int ny = 600;
   int ns = 100;
 
   /// BitMap
@@ -106,10 +103,8 @@ int main() {
 
   /// 背景色の指定
   memset(output.data, 0xFF, output.width * output.height * output.ch);
-  drawPix(output.data, output.width, output.height, 199, 199, 0xFF, 0x00, 0x00);
-
-  // render(nx, ny, ns);
-
+  /// 描画処理
+  render(output.data, nx, ny, ns);
 
   if (pngFileEncodeWrite(&output, "output.png")) {
     freeBitmapData(&output);
