@@ -71,7 +71,7 @@ class moving_sphere : public hitable {
 /// time0 から time1の間で移動する球の
 /// 時刻 t における中心座標
 vec3 moving_sphere::center(float time) const {
-  return center0 + ((time - time0) / (time1 - time0)) * (center1 - center1);
+  return center0 + ((time - time0) / (time1 - time0)) * (center1 - center0);
 }
 
 /// 交差判定
@@ -82,7 +82,7 @@ bool moving_sphere::hit(const ray &r, float t_min, float t_max, hit_record &rec)
   float c = dot(oc, oc) - radius * radius;
   float discriminant = b * b - a * c;
   if (discriminant > 0) {
-    float temp = (-b - sqrt(b * b - a * c)) / a;
+    float temp = (-b - sqrt(discriminant)) / a;
     if (t_min < temp && temp < t_max) {
       rec.t = temp;
       rec.p = r.point_at_parameter(rec.t);
@@ -91,7 +91,7 @@ bool moving_sphere::hit(const ray &r, float t_min, float t_max, hit_record &rec)
       return true;
     }
     /// 別の交差点
-    temp = (-b + sqrt(b * b - a * c)) / a;
+    temp = (-b + sqrt(discriminant)) / a;
     if (t_min < temp && temp < t_max) {
       rec.t = temp;
       rec.p = r.point_at_parameter(rec.t);
