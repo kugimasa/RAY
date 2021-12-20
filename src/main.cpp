@@ -37,6 +37,18 @@ void flush_progress(float progress) {
   std::cout << "] " << int(progress * 100.0) << " %" << std::flush;
 }
 
+void drawPix(unsigned char *data,
+             unsigned int w, unsigned int h,
+             unsigned int x, unsigned int y,
+             unsigned char r, unsigned char g, unsigned char b)
+{
+  unsigned char *p;
+  p = data + y * w * 3 + x * 3;
+  p[0] = r;
+  p[1] = g;
+  p[2] = b;
+}
+
 void render(int nx, int ny, int ns)
 {
   std::ofstream outputfile("Diffuse_3sphere.ppm");
@@ -92,8 +104,9 @@ int main() {
     return -1;
   }
 
-  /// Render
+  /// 背景色の指定
   memset(output.data, 0xFF, output.width * output.height * output.ch);
+  drawPix(output.data, output.width, output.height, 199, 199, 0xFF, 0x00, 0x00);
 
   // render(nx, ny, ns);
 
