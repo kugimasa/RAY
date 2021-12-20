@@ -4,6 +4,9 @@
 // Using the code of Ray Tracing in One Weekend
 // https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
+#ifndef RAY_SRC_UTILS_VEC3_H_
+#define RAY_SRC_UTILS_VEC3_H_
+
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
@@ -148,3 +151,6 @@ inline vec3 &vec3::operator/=(const float t) {
 inline vec3 unit_vector(vec3 v) {
   return v / v.length();
 }
+
+static const vec3 Y_UP (0.0f, 1.0f, 0.0f);
+#endif //RAY_SRC_UTILS_VEC3_H_

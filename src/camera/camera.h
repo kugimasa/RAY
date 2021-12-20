@@ -18,6 +18,14 @@ vec3 random_in_unit_disk() {
 
 class camera {
  public:
+  /// t0 から t1で移動するカメラ
+  camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov,
+         float aspect, float aperture, float focus_dist,
+         float t0, float t1) {
+    time0 = t0;
+    time1 = t1;
+    camera(lookfrom, lookat, vup, vfov, aspect, aperture, focus_dist);
+  }
   /// Defocus Blur
   camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect, float aperture, float focus_dist) {
     lens_radius = aperture / 2;
@@ -62,6 +70,8 @@ class camera {
   vec3 horizontal;
   vec3 vertical;
   vec3 u, v, w;
+  float time0 {0.0f};
+  float time1 {0.0f};
   float lens_radius;
 };
 #endif //RAY_CAMERA_CAMERA_H_
