@@ -60,13 +60,10 @@ void render(unsigned char *data, unsigned int nx, unsigned int ny, int ns)
   /// シーンデータ
   /// オブジェクトデータ
   hitable *list[2];
-//  list[0] = new moving_sphere(vec3(-0.5, 0, -1),vec3(0.5, 0, -1),
-//                              0.0, 1.0, 0.5,
-//                              new lambertian(KUGI_COLOR));
-  list[0] = new sphere(vec3(0, 0.0, -1), 0.5, new lambertian(KUGI_COLOR));
+  list[0] = new moving_sphere(vec3(-0.5, 0, -1),vec3(0.5, 0, -1),
+                              0.0, 1.0, 0.5,
+                              new lambertian(KUGI_COLOR));
   list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(GREY));
-//  list[1] = new sphere(vec3(-1, 0, -1), 0.5, new lambertian(GREEN));
-//  list[2] = new sphere(vec3(1, 0, -1), 0.5, new lambertian(WHITE));
   hitable *world = new hitable_list(list, 2);
   /// カメラ設定
   vec3 lookfrom(0.0, 1.0, 5.0);
@@ -76,8 +73,7 @@ void render(unsigned char *data, unsigned int nx, unsigned int ny, int ns)
   float aperture {0.0f};
   float aspect = float(nx)/float(ny);
   float t0 {0.0f}, t1 {1.0f};
-  // camera cam(lookfrom, lookat, Y_UP, vfov, aspect, aperture, dist_to_focus, t0, t1);
-  camera cam(lookfrom, lookat, Y_UP, vfov, aspect, aperture, dist_to_focus);
+  camera cam(lookfrom, lookat, Y_UP, vfov, aspect, aperture, dist_to_focus, t0, t1);
   float progress = 0.0;
   int img_size = nx * ny;
   std::cout << "========== Render ==========" << std::endl;
